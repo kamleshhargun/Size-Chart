@@ -4,18 +4,9 @@
   <title>Dress Size Chart</title>
 
   <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-    }
+    body { font-family: Arial; text-align: center; }
 
-    h2 {
-      margin-bottom: 10px;
-    }
-
-    .btn-group {
-      margin: 15px 0;
-    }
+    .btn-group { margin: 15px 0; }
 
     button {
       padding: 8px 15px;
@@ -27,9 +18,7 @@
       border-radius: 5px;
     }
 
-    button.active {
-      background: #ff6600;
-    }
+    button.active { background: orange; }
 
     table {
       margin: auto;
@@ -38,22 +27,15 @@
       max-width: 600px;
     }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
+    th, td { border: 1px solid #ddd; padding: 8px; }
 
-    th {
-      background: #000;
-      color: #fff;
-    }
+    th { background: #000; color: #fff; }
 
     .guide {
       margin-top: 30px;
       text-align: left;
       max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: auto;
     }
   </style>
 </head>
@@ -67,7 +49,7 @@
   <button id="cmBtn" onclick="showTable('cm')">CM</button>
 </div>
 
-<table id="sizeTable">
+<table>
   <thead>
     <tr>
       <th>Size</th>
@@ -77,63 +59,62 @@
       <th>Sleeve</th>
     </tr>
   </thead>
-  <tbody></tbody>
+  <tbody id="tbody"></tbody>
 </table>
 
 <div class="guide">
   <h3>How to Measure</h3>
-  <p><b>Chest:</b> Measure around the fullest part of your chest.</p>
-  <p><b>Waist:</b> Measure around your natural waistline.</p>
-  <p><b>Length:</b> Measure from shoulder to desired length.</p>
-  <p><b>Sleeve:</b> Measure from shoulder to wrist.</p>
+  <p><b>Chest:</b> Measure around fullest part.</p>
+  <p><b>Waist:</b> Measure natural waistline.</p>
+  <p><b>Length:</b> Shoulder to length.</p>
+  <p><b>Sleeve:</b> Shoulder to wrist.</p>
 </div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzofuBLg_ckv2iB4HQZWNeKEuZdmhVEtkkT7TtHbSKuRXmgr8ptmFDUw52ioaRJzUHybg/exec";
 
-  let chartData = {};
+const API_URL = "https://script.google.com/macros/s/AKfycbzofuBLg_ckv2iB4HQZWNeKEuZdmhVEtkkT7TtHbSKuRXmgr8ptmFDUw52ioaRJzUHybg/exec";
+const SHEET_NAME = "Dress"; // 👈 CHANGE HERE
 
-  function loadData() {
-    fetch(API_URL)
-    .then(res => res.json())
-    .then(data => {
-      chartData = data;
-      renderTable("inch");
-    });
-  }
+let chartData = {};
 
-  function renderTable(unit) {
-    let tbody = document.querySelector("#sizeTable tbody");
-    tbody.innerHTML = "";
+function loadData() {
+  fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+    chartData = data;
+    renderTable("inch");
+  });
+}
 
-    chartData[unit].forEach(row => {
-      let tr = `
-        <tr>
-          <td>${row.size}</td>
-          <td>${row.chest}</td>
-          <td>${row.waist}</td>
-          <td>${row.length}</td>
-          <td>${row.sleeve}</td>
-        </tr>
-      `;
-      tbody.innerHTML += tr;
-    });
-  }
+function renderTable(unit) {
+  let tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
 
-  function showTable(unit) {
-    renderTable(unit);
+  chartData[SHEET_NAME][unit].forEach(row => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${row.size}</td>
+        <td>${row.chest}</td>
+        <td>${row.waist}</td>
+        <td>${row.length}</td>
+        <td>${row.sleeve}</td>
+      </tr>
+    `;
+  });
+}
 
-    document.getElementById("inchBtn").classList.remove("active");
-    document.getElementById("cmBtn").classList.remove("active");
+function showTable(unit) {
+  renderTable(unit);
 
-    if (unit === "inch") {
-      document.getElementById("inchBtn").classList.add("active");
-    } else {
-      document.getElementById("cmBtn").classList.add("active");
-    }
-  }
+  inchBtn.classList.remove("active");
+  cmBtn.classList.remove("active");
 
-  loadData();
+  if (unit === "inch") inchBtn.classList.add("active");
+  else cmBtn.classList.add("active");
+}
+
+loadData();
+
 </script>
 
 </body>
