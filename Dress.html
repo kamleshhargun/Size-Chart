@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dress Size Chart</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .btn-group {
+      margin: 15px 0;
+    }
+
+    button {
+      padding: 8px 15px;
+      border: none;
+      cursor: pointer;
+      margin: 5px;
+      background: #000;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    button.active {
+      background: #ff6600;
+    }
+
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    th {
+      background: #000;
+      color: #fff;
+    }
+
+    .guide {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Dress Size Chart</h2>
+
+<div class="btn-group">
+  <button id="inchBtn" class="active" onclick="showTable('inch')">Inches</button>
+  <button id="cmBtn" onclick="showTable('cm')">CM</button>
+</div>
+
+<table id="sizeTable">
+  <thead>
+    <tr>
+      <th>Size</th>
+      <th>Chest</th>
+      <th>Waist</th>
+      <th>Length</th>
+      <th>Sleeve</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div class="guide">
+  <h3>How to Measure</h3>
+  <p><b>Chest:</b> Measure around the fullest part of your chest.</p>
+  <p><b>Waist:</b> Measure around your natural waistline.</p>
+  <p><b>Length:</b> Measure from shoulder to desired length.</p>
+  <p><b>Sleeve:</b> Measure from shoulder to wrist.</p>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzofuBLg_ckv2iB4HQZWNeKEuZdmhVEtkkT7TtHbSKuRXmgr8ptmFDUw52ioaRJzUHybg/exec";
+
+  let chartData = {};
+
+  function loadData() {
+    fetch(API_URL)
+    .then(res => res.json())
+    .then(data => {
+      chartData = data;
+      renderTable("inch");
+    });
+  }
+
+  function renderTable(unit) {
+    let tbody = document.querySelector("#sizeTable tbody");
+    tbody.innerHTML = "";
+
+    chartData[unit].forEach(row => {
+      let tr = `
+        <tr>
+          <td>${row.size}</td>
+          <td>${row.chest}</td>
+          <td>${row.waist}</td>
+          <td>${row.length}</td>
+          <td>${row.sleeve}</td>
+        </tr>
+      `;
+      tbody.innerHTML += tr;
+    });
+  }
+
+  function showTable(unit) {
+    renderTable(unit);
+
+    document.getElementById("inchBtn").classList.remove("active");
+    document.getElementById("cmBtn").classList.remove("active");
+
+    if (unit === "inch") {
+      document.getElementById("inchBtn").classList.add("active");
+    } else {
+      document.getElementById("cmBtn").classList.add("active");
+    }
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>
