@@ -164,21 +164,27 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyrJwSC5R0-dUbBQoWIhxbzPsBRnU77v2iPoaFaee_CFbIkqLSyS6T-RG1z1UUIH_BbzQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbygEce9glQPaG8fCKtx5NGYbbk549NIU55Mt6sLiin9JYIiQAEAYjkbd0dwXQeaTWI1xA/exec";
 const SHEET_NAME = "Co-Ord_Set";
 
 let chartData = {};
 
-function loadData() {
-  fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
+async function loadData() {
+  try {
+    const res = await fetch(API_URL + "?t=" + Date.now());
+    const data = await res.json();
+
     chartData = data;
     renderTable("inch");
-  });
+
+  } catch (err) {
+    console.error(err);
+    document.body.innerHTML = "Error loading data";
+  }
 }
 
 function renderTable(unit) {
+
   let tbody = document.getElementById("tbody");
   let thead = document.getElementById("thead");
 
@@ -192,20 +198,12 @@ function renderTable(unit) {
     return;
   }
 
-  // 🔥 Dynamic headers
-  let headers = [];
-
-rows.forEach(row => {
-  for (let key in row) {
-    if (!headers.includes(key)) {
-      headers.push(key);
-    }
-  }
-});
+  // ✅ FIX: headers first row se lo (all columns)
+  let headers = Object.keys(rows[0]);
 
   let symbol = unit === "inch" ? '"' : " cm";
 
-  // Header render
+  // Header
   let headerHTML = "<tr>";
   headers.forEach(h => {
     headerHTML += `<th>${h.toUpperCase()}</th>`;
@@ -213,14 +211,13 @@ rows.forEach(row => {
   headerHTML += "</tr>";
   thead.innerHTML = headerHTML;
 
-  // Row render
+  // Rows
   rows.forEach(row => {
     let rowHTML = "<tr>";
 
     headers.forEach(h => {
       let value = row[h] || "";
 
-      // Size bold kare
       if (h === "size") {
         rowHTML += `<td><b>${value}</b></td>`;
       } else {
