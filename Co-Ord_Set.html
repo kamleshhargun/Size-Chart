@@ -193,7 +193,15 @@ function renderTable(unit) {
   }
 
   // 🔥 Dynamic headers
-  let headers = Object.keys(rows[0]);
+  let headers = [];
+
+rows.forEach(row => {
+  for (let key in row) {
+    if (!headers.includes(key)) {
+      headers.push(key);
+    }
+  }
+});
 
   let symbol = unit === "inch" ? '"' : " cm";
 
