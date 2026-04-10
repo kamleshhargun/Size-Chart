@@ -174,7 +174,7 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyrJwSC5R0-dUbBQoWIhxbzPsBRnU77v2iPoaFaee_CFbIkqLSyS6T-RG1z1UUIH_BbzQ/exec";
-const SHEET_NAME = "Shirt";
+const SHEET_NAME = "Co-Ord_Set";
 
 let chartData = {};
 
@@ -189,20 +189,48 @@ function loadData() {
 
 function renderTable(unit) {
   let tbody = document.getElementById("tbody");
+  let thead = document.getElementById("thead");
+
   tbody.innerHTML = "";
+  thead.innerHTML = "";
+
+  let rows = chartData[SHEET_NAME][unit];
+
+  if (!rows || rows.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='10'>No Data</td></tr>";
+    return;
+  }
+
+  // 🔥 Dynamic headers
+  let headers = Object.keys(rows[0]);
 
   let symbol = unit === "inch" ? '"' : " cm";
 
-  chartData[SHEET_NAME][unit].forEach(row => {
-    tbody.innerHTML += `
-      <tr>
-        <td><b>${row.size}</b></td>
-        <td>${row.chest}${symbol}</td>
-        <td>${row.waist}${symbol}</td>
-        <td>${row.length}${symbol}</td>
-        <td>${row.sleeve}${symbol}</td>
-      </tr>
-    `;
+  // Header render
+  let headerHTML = "<tr>";
+  headers.forEach(h => {
+    headerHTML += `<th>${h.toUpperCase()}</th>`;
+  });
+  headerHTML += "</tr>";
+  thead.innerHTML = headerHTML;
+
+  // Row render
+  rows.forEach(row => {
+    let rowHTML = "<tr>";
+
+    headers.forEach(h => {
+      let value = row[h] || "";
+
+      // Size bold kare
+      if (h === "size") {
+        rowHTML += `<td><b>${value}</b></td>`;
+      } else {
+        rowHTML += `<td>${value}${symbol}</td>`;
+      }
+    });
+
+    rowHTML += "</tr>";
+    tbody.innerHTML += rowHTML;
   });
 }
 
