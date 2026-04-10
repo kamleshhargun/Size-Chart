@@ -194,8 +194,17 @@ function renderTable(unit) {
   }
 
   // 🔥 Dynamic headers
-  let headers = Object.keys(rows[0]);
+  let headers = [];
 
+// 🔥 Sab rows scan karke full headers nikalo
+rows.forEach(row => {
+  Object.keys(row).forEach(key => {
+    if (!headers.includes(key)) {
+      headers.push(key);
+    }
+  });
+});
+  
   let symbol = unit === "inch" ? '"' : " cm";
 
   // Header render
