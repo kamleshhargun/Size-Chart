@@ -100,7 +100,15 @@
     tr:hover td {
       background: #f9f9f9;
     }
+th[rowspan="2"]{
+  vertical-align: middle;
+}
 
+th[colspan]{
+  background:#000;
+  color:#fff;
+  font-weight:600;
+}
     /* Guide */
     .guide {
       margin-top: 20px;
@@ -198,35 +206,45 @@ function renderTable(unit) {
     return;
   }
 
-  // ✅ FIX: headers first row se lo (all columns)
-  let headers = Object.keys(rows[0]);
-
   let symbol = unit === "inch" ? '"' : " cm";
 
-  // Header
-  let headerHTML = "<tr>";
-  headers.forEach(h => {
-    headerHTML += `<th>${h.toUpperCase()}</th>`;
-  });
-  headerHTML += "</tr>";
-  thead.innerHTML = headerHTML;
+  thead.innerHTML = `
+    <tr>
+      <th rowspan="2">SIZE</th>
+      <th colspan="5">TOP</th>
+      <th colspan="3">CULOTTE</th>
+    </tr>
 
-  // Rows
+    <tr>
+      <th>CHEST</th>
+      <th>WAIST</th>
+      <th>HIP</th>
+      <th>LENGTH</th>
+      <th>SLEEVE</th>
+
+      <th>LENGTH</th>
+      <th>MORI</th>
+      <th>WAIST</th>
+    </tr>
+  `;
+
   rows.forEach(row => {
-    let rowHTML = "<tr>";
 
-    headers.forEach(h => {
-      let value = row[h] || "";
+    tbody.innerHTML += `
+      <tr>
+        <td><b>${row.Size || row.size || ""}</b></td>
 
-      if (h === "size") {
-        rowHTML += `<td><b>${value}</b></td>`;
-      } else {
-        rowHTML += `<td>${value}${symbol}</td>`;
-      }
-    });
+        <td>${row.Chest || row.chest || ""}${symbol}</td>
+        <td>${row.Waist || row.waist || ""}${symbol}</td>
+        <td>${row.Hip || row.hip || ""}${symbol}</td>
+        <td>${row.Top_Length || row.top_length || ""}${symbol}</td>
+        <td>${row.Sleeve || row.sleeve || ""}${symbol}</td>
 
-    rowHTML += "</tr>";
-    tbody.innerHTML += rowHTML;
+        <td>${row.Culotte_Length || row.culotte_length || ""}${symbol}</td>
+        <td>${row.Mori || row.mori || ""}${symbol}</td>
+        <td>${row.Culotte_Waist || row.culotte_waist || ""}${symbol}</td>
+      </tr>
+    `;
   });
 }
 
